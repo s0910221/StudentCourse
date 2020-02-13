@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Repository.DependencyInjection;
 using Service;
 using Service.Interface;
 
@@ -62,6 +63,7 @@ namespace StudentCourse
             {
                 options.UseSqlServer(Configuration.GetConnectionString("StudentCourseConnection"));
             });
+            services.AddUnitOfWork<StudentCourseContext>();
             return services;
         }
 

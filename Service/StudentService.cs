@@ -5,43 +5,49 @@ using System.Threading.Tasks;
 using Entity.Data;
 using Entity.Entity;
 using Microsoft.EntityFrameworkCore;
+using Repository.Interfaces;
 using Service.Interface;
 
 namespace Service
 {
     public class StudentService : IStudentService
     {
-        private readonly StudentCourseContext db;
+        private readonly IUnitOfWork uow;
 
-        public StudentService(StudentCourseContext db)
+        public StudentService(IUnitOfWork uow)
         {
-            this.db = db;
+            this.uow = uow;
         }
 
         public async Task<IEnumerable<Student>> GetStudents()
         {
-            return await db.Students.ToListAsync();
+            return await GetStudentRepository().GetList().ToListAsync();
         }
 
         public async Task<bool> CreateStudent(Student student)
         {
             student.StudentId = Guid.NewGuid();
-            await db.AddAsync(student);
-            return await db.SaveChangesAsync() > 0;
+            await GetStudentRepository().AddAsync(student);
+            return await uow.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> UpdateStudent(Student student)
         {
-            db.Entry(student).State = EntityState.Modified;
-            return await db.SaveChangesAsync() > 0;
+            GetStudentRepository().Update(student);
+            return await uow.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteStudent(Guid studentId)
         {
-            var deleteStudent = await db.Students.FindAsync(studentId);
-            db.Students.Remove(deleteStudent);
-            return await db.SaveChangesAsync() > 0;
+            var repo = GetStudentRepository();
+            var deleteStudent = await repo.GetFirstAsync(x => x.StudentId == studentId);
+            GetStudentRepository().Delete(deleteStudent);
+            return await uow.SaveChangesAsync() > 0;
         }
 
+        private IGenericRepository<Student> GetStudentRepository()
+        {
+            return uow.GetGenericRepository<Student>();
+        }
     }
 }
