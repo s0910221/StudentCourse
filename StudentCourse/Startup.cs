@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Service;
+using Service.Interface;
 
 namespace StudentCourse
 {
@@ -29,6 +31,8 @@ namespace StudentCourse
         {
             services.AddControllers();
             AddDbConnection(services);
+            AddBusinessService(services);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +62,12 @@ namespace StudentCourse
             {
                 options.UseSqlServer(Configuration.GetConnectionString("StudentCourseConnection"));
             });
+            return services;
+        }
+
+        private IServiceCollection AddBusinessService(IServiceCollection services)
+        {
+            services.AddTransient<IStudentService, StudentService>();
             return services;
         }
     }
