@@ -9,6 +9,7 @@ namespace Entity.Entity
     {
         public Guid StudentId { get; set; }
         public Guid CourseId { get; set; }
+        public int? Score { get; set; }
 
         [JsonIgnore]
         public virtual Student Student { get; set; }
