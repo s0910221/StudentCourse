@@ -71,6 +71,7 @@ namespace StudentCourse
         {
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<ICourseService, CourseService>();
+            services.AddTransient<IStudentCourseService, StudentCourseService>();
             return services;
         }
     }
