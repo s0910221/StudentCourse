@@ -70,6 +70,7 @@ namespace StudentCourse
         private IServiceCollection AddBusinessService(IServiceCollection services)
         {
             services.AddTransient<IStudentService, StudentService>();
+            services.AddTransient<ICourseService, CourseService>();
             return services;
         }
     }
