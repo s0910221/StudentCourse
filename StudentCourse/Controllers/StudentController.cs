@@ -14,10 +14,12 @@ namespace StudentCourse.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService studentService;
+        private readonly IStudentCourseService studentCourseService;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentService studentService, IStudentCourseService studentCourseService)
         {
             this.studentService = studentService;
+            this.studentCourseService = studentCourseService;
         }
 
         /// <summary>
@@ -88,5 +90,22 @@ namespace StudentCourse.Controllers
             }
         }
 
+        /// <summary>
+        /// 批次更新學生修課成績
+        /// </summary>
+        //PATCH: api/Student/{studentId}/Score
+        [HttpPatch("{studentId}/Score")]
+        public async Task<IActionResult> UpsertStudentScore(Guid studentId, IEnumerable<Entity.Entity.StudentCourse> studentCourses)
+        {
+            var result = await studentCourseService.UpsertScoreByStudent(studentId, studentCourses);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("更新學生修課成績失敗");
+            }
+        }
     }
 }

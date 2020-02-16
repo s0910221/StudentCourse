@@ -12,5 +12,7 @@ namespace Service.Interface
         Task<bool> UpsertStudentCourseByStudent(Guid studentId, IEnumerable<Guid> courseIds);
         Task<IEnumerable<StudentCourse>> GetStudentCourseByCourseId(Guid courseId);
         Task<bool> UpsertStudentCourseByCourse(Guid courseId, IEnumerable<Guid> studentIds);
+        Task<bool> UpsertScoreByStudent(Guid studentId, IEnumerable<StudentCourse> studentCourses);
+        Task<bool> UpsertScoreByCourse(Guid courseId, IEnumerable<StudentCourse> studentCourses);
     }
 }

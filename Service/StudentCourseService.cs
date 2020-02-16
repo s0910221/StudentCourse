@@ -62,6 +62,48 @@ namespace Service
             return await uow.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> UpsertScoreByStudent(Guid studentId, IEnumerable<StudentCourse> studentCourses)
+        {
+            var repo = GetStudentCourseRepository();
+            var dbData = repo.GetList(x => x.StudentId == studentId);
+            var isStudentCoursesAllInDb = studentCourses.All(x => dbData.Any(y => y.CourseId == x.CourseId));
+            if (!isStudentCoursesAllInDb)
+            {
+                return false;
+            }
+            var studentCoursesDictionary = studentCourses.ToDictionary(x => x.CourseId, x => x);
+            foreach (var item in dbData)
+            {
+                if (studentCoursesDictionary.TryGetValue(item.CourseId, out var value))
+                {
+                    item.Score = value.Score;
+                    repo.Update(item);
+                }
+            }
+            return await uow.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpsertScoreByCourse(Guid courseId, IEnumerable<StudentCourse> studentCourses)
+        {
+            var repo = GetStudentCourseRepository();
+            var dbData = repo.GetList(x => x.CourseId == courseId);
+            var isStudentCoursesAllInDb = studentCourses.All(x => dbData.Any(y => y.StudentId == x.StudentId));
+            if (!isStudentCoursesAllInDb)
+            {
+                return false;
+            }
+            var studentCoursesDictionary = studentCourses.ToDictionary(x => x.StudentId, x => x);
+            foreach (var item in dbData)
+            {
+                if (studentCoursesDictionary.TryGetValue(item.StudentId, out var value))
+                {
+                    item.Score = value.Score;
+                    repo.Update(item);
+                }
+            }
+            return await uow.SaveChangesAsync() > 0;
+        }
+
         private IGenericRepository<StudentCourse> GetStudentCourseRepository()
         {
             return uow.GetGenericRepository<StudentCourse>();
